@@ -12,8 +12,8 @@ abstract class config {
     $this->config[$key] = $value;
   }
 
-  public function getAllConfig() {
-    return $this->config;
+  public function getConfig($key) {
+    return $this->config[$key];
   }
 
   public function getTarget() {
@@ -35,6 +35,10 @@ class sendInfo extends config {
   public function send() {
     if ($this->checkConfig()) {
       $files = $this->getFiles();
+      foreach ($files as $key => $file) {
+        print '/usr/bin/rsync -au ' . $this->getConfig('source') . '/' . $file . ' ' . $this->getConfig('user') . '@' . $this->target . ':' . $this->getConfig('target_dir') . "\n";
+        $result = exec('/usr/bin/rsync -au ' . $this->getConfig('source') . '/' . $file . ' ' . $this->getConfig('user') . '@' . $this->target . ':' . $this->getConfig('target_dir'));
+      }
     }
   }
 
@@ -60,6 +64,39 @@ class sendInfo extends config {
 }
 
 /* Client code */
-$log = config::getInstance('smbjorklund.no');
-$log->setConfig('source', '/Users/steinmb/tcplog');
+$options = getopt('hu:t:s:d:');
+if (!$options) {
+  print "Usage: tcpdump -h \n";
+  exit(1);
+}
+
+$help = 'Usage: tcdump -u <remote user name> -t <target server (domain name/IP)> -s <source directory> -d <target directory>' . "\n";
+foreach ($options as $key => $value) {
+  switch ($key) {
+    case 'u':
+      print "username $value\n";
+      $user = $value;
+    case 't':
+      print "target system $value\n";
+      $target = $value;
+    case 's':
+      print "Source $value\n";
+      $source = $value;
+    case 'd':
+      print "Target dir $value\n";
+      $target_dir = $value;
+      break;
+    case 'h':
+      print $help;
+      exit(1);
+    default:
+      print $help;
+      exit(1);
+  }
+}
+
+$log = config::getInstance($target);
+$log->setConfig('user', $user);
+$log->setConfig('source', $source);
+$log->setConfig('target_dir', $target_dir);
 $log->send();
