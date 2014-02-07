@@ -1,0 +1,71 @@
+#! /bin/bash
+#
+### BEGIN INIT INFO
+# Provides: nprobe
+# Required-Start: $local_fs $remote_fs $network $syslog
+# Required-Stop: $local_fs $remote_fs $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start/stop nprobe web
+### END INIT INFO
+#
+# nprobe This init.d script is used to start nprobe.
+#
+NPROBE=/usr/local/bin/nprobe
+INTERFACE="eth1"
+PID_FILE="/var/run/nprobe.pid"
+OPTIONS="-u 432 -1 11:01:F5:B3:12:D5@432 -q 192.168.1.11:2055 -V 5 -i eth1 -n 192.168.52.10:9996 ${PID_FILE}"
+
+start_nprobe() {
+  ${NPROBE} ${OPTIONS} > /dev/null &
+  return 1
+}
+
+stop_nprobe() {
+  if [ -f ${PID_FILE} ]; then
+    kill `cat ${PID_FILE}` 2>1 /dev/null
+    \rm ${PID_FILE}
+  fi
+}
+
+########
+
+if [ -z "$2" ]; then
+  interface="all";
+else
+  interface=$2;
+fi
+
+case "$1" in
+  start)
+    echo -n "Starting nProbe"
+    start_nprobe $interface;
+    echo " Done."
+  ;;
+
+  force-start)
+    o -n "Starting nProbe"
+    start_nprobe $interface;
+    echo "Done."
+  ;;
+
+  stop)
+    echo -n "Stopping nProbe"
+    stop_nprobe $interface;
+    echo " Done."
+  ;;
+
+  restart)
+    echo -n "Restarting nProbe"
+    stop_nprobe $interface;
+    sleep 1
+    start_nprobe $interface 0;
+    echo " Done."
+  ;;
+
+  *)
+    echo "Usage: /etc/init.d/nprobe {start|force-start|stop|restart}"
+    exit 1
+
+esac
+exit 0
