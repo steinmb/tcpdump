@@ -27,7 +27,25 @@ Also make sure you have a proper DNS server configured.
 
 Alter the IP to the correct DNS server.
 
+### Configure ntopng/nprobe
+
+Config found in `/usr/local/etc/ntopng`.
+Binaries stored at `/usr/local/bin`
+
 ## Usage
+
+### Debugging transport
 
 * Transfered log files are stored in a central server.
 * Device access is done by logging inn on ssh.
+
+### Analyzing traffic
+
+* Collected data is picked up by ntopng (http://www.ntop.org/products/ntop/)
+* Access data is easiest accessed by using the built in web server http://<IP>:3000
+
+Optional. Statistic can be collected by nProbe (http://www.ntop.org/products/nprobe/) and passed on to a central onshore logging system.
+
+    Libraries have been installed in:
+    /usr/local/lib
+
