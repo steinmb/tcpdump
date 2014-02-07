@@ -1,2 +1,4 @@
 #!/bin/bash
-/usr/sbin/tcpdump -v -e -w /var/log/tcplog/tcplog.txt -n port 80
+DATE=`date +%d-%m-%Y-%H:%M:%S`
+
+/usr/sbin/tcpdump -v -e -w /var/log/tcplog/$DATE-tcplog.txt -n port 80
